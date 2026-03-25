@@ -12,7 +12,6 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 .page-header p{font-size:11px;color:#9b90b0;margin-top:2px;}
 .sect-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#c084fc;margin:16px 0 8px;}
 .card{background:#160028;border:1px solid #2a1845;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
-/* CHECKLIST */
 .check-item{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;background:#160028;border:1.5px solid #2a1845;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
 .check-item.done{background:rgba(124,58,237,.15);border-color:rgba(168,85,247,.5);}
 .check-box{width:22px;height:22px;border-radius:6px;flex-shrink:0;margin-top:1px;border:2px solid #3d2060;display:flex;align-items:center;justify-content:center;transition:all .2s;}
@@ -21,21 +20,16 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 .check-item.done .check-tick{display:block;}
 .check-lbl{font-size:13px;color:#ede8f5;line-height:1.4;}
 .check-item.done .check-lbl{color:#5a5070;text-decoration:line-through;}
-/* JOURNAL */
 .j-textarea{width:100%;background:#160028;border:1px solid #2a1845;border-radius:12px;padding:12px 14px;color:#ede8f5;font-size:14px;line-height:1.6;resize:vertical;outline:none;font-family:Georgia,serif;margin-bottom:10px;}
 .j-textarea::placeholder{color:#3a3050;}
 .j-textarea.prompt-ta{border-color:rgba(249,168,212,.3);}
 .media-btn{flex:1;padding:11px 0;border-radius:10px;border:1px solid;font-size:13px;cursor:pointer;font-weight:700;}
 .grad-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#be185d);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;}
-/* AFFIRMATION */
 .aff-card{background:linear-gradient(135deg,#1a003a,#2e0025);border:1px solid #2a1845;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
-/* SCHEDULE */
 .sched-trigger{width:100%;background:#160028;border:1px solid #2a1845;border-radius:12px;padding:12px 16px;color:#c084fc;font-size:13px;font-weight:700;cursor:pointer;text-align:left;margin-top:8px;display:flex;justify-content:space-between;align-items:center;}
-/* NAV */
 .bot-nav{position:fixed;bottom:0;left:0;right:0;background:#0e0018;border-top:1px solid #2a1845;display:flex;z-index:100;max-width:480px;margin:0 auto;}
 .nav-btn{flex:1;padding:10px 4px 14px;border:none;background:none;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:2px solid transparent;text-decoration:none;}
 .nav-btn.home{color:#5a5070;}
-.nav-btn.home:hover{color:#c084fc;}
 .nav-btn.current{color:#c084fc;border-top-color:#c084fc;}
 .nav-icon{font-size:19px;}
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#7c3aed;color:#fff;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:700;z-index:999;pointer-events:none;opacity:0;transition:opacity .3s;}
@@ -55,12 +49,10 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
   </div>
 </div>
 
-<!-- PROGRESS BAR -->
 <div style="background:#0a0015;border-radius:99px;height:5px;margin-bottom:20px;">
   <div id="progBar" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#7c3aed,#be185d);transition:width .3s;width:0%;"></div>
 </div>
 
-<!-- CHECKLIST -->
 <div class="sect-label" style="margin-top:0;">Daily Checklist</div>
 <div id="checklistContainer"></div>
 
@@ -72,19 +64,16 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 
 <div style="background:#0a0015;border:1px solid #2a1845;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#5a5070;line-height:1.6;font-style:italic;">If the day falls apart: write one true sentence. That is enough. You are not the old pattern.</div>
 
-<!-- JOURNAL -->
 <div class="sect-label">Today's Journal Entry</div>
 <div style="font-size:12px;color:#5a5070;margin-bottom:6px;font-style:italic;">General thoughts — what came up, what hurt, what you noticed</div>
 <textarea id="journalThoughts" class="j-textarea" rows="5" placeholder="What came up today? What hurt? What surprised you? What are you recognizing?"></textarea>
 
-<!-- PROMPT -->
 <div class="card" style="border-left:3px solid #f9a8d4;background:linear-gradient(135deg,#160028,#200020);margin-bottom:8px;">
   <div style="font-size:10px;font-weight:700;color:#f9a8d4;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Today's Prompt · Day <span id="promptDayNum"></span></div>
   <div id="promptText" style="font-size:14px;color:#ede8f5;font-style:italic;line-height:1.6;font-family:Georgia,serif;"></div>
 </div>
 <textarea id="journalPromptResp" class="j-textarea prompt-ta" rows="5" placeholder="Write your response here — raw, unedited, honest..."></textarea>
 
-<!-- VOICE / VIDEO -->
 <div style="font-size:12px;color:#5a5070;margin-bottom:6px;">Add a voice or video note</div>
 <div style="display:flex;gap:8px;margin-bottom:10px;" id="mediaBtnsArea">
   <button class="media-btn" style="background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4);color:#c084fc;" onclick="startRec('audio')">🎙 Voice Note</button>
@@ -95,7 +84,6 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 <button class="grad-btn" onclick="saveEntry()" id="saveBtn" style="margin-bottom:6px;">Save Today's Entry ✦</button>
 <div style="font-size:11px;color:#3a3050;text-align:center;margin-bottom:16px;font-style:italic;">Saves locally. View in History.</div>
 
-<!-- AFFIRMATION -->
 <div class="sect-label">When the Wound Speaks</div>
 <div class="aff-card">
   <div id="affWound" style="font-size:11px;color:#5a5070;margin-bottom:6px;font-style:italic;"></div>
@@ -108,7 +96,6 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
   </div>
 </div>
 
-<!-- SCHEDULE -->
 <button class="sched-trigger" onclick="toggleSched()">
   <span>◷ Today's Schedule</span><span id="schedArrow">▼</span>
 </button>
@@ -117,7 +104,7 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 </div>
 
 <nav class="bot-nav">
-  <a href="../ual-app" class="nav-btn home"><span class="nav-icon">✦</span>Home</a>
+  <a href="https://fletch1980.github.io/Unworthy/" class="nav-btn home"><span class="nav-icon">✦</span>Home</a>
   <div class="nav-btn current"><span class="nav-icon">◈</span>Today</div>
 </nav>
 
@@ -144,7 +131,6 @@ function getDayNum(){return Math.max(1,Math.min(Math.floor((new Date()-START)/86
 function isoFriendly(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 
-// ── CHECKLIST ────────────────────────────────────────────────
 var todayKey='ual_chk_'+new Date().toDateString();
 
 function renderChecklist(){
@@ -168,14 +154,12 @@ function toggleCheck(id){
   var checked=gd(todayKey,{});
   checked[id]=!checked[id];
   sd(todayKey,checked);
-  // auto-log to calendar
   var logs=gd('ual_logs',{}), acts=logs[todayISO()]||[];
   if(id==='resource'&&checked[id]&&acts.indexOf('healing')===-1){acts.push('healing');logs[todayISO()]=acts;sd('ual_logs',logs);}
   if(id==='creative'&&checked[id]&&acts.indexOf('creative')===-1){acts.push('creative');logs[todayISO()]=acts;sd('ual_logs',logs);}
   renderChecklist();
 }
 
-// ── JOURNAL ──────────────────────────────────────────────────
 var recObj=null, recChunks=[], recType=null, blobUrl=null;
 
 function loadEntry(){
@@ -191,7 +175,6 @@ function saveEntry(){
   var dn=getDayNum(), all=gd('ual_entries',{});
   all[todayISO()]={thoughts:thoughts,promptResponse:resp,prompt:PROMPTS[(dn-1)%PROMPTS.length],dayNum:dn,date:isoFriendly(todayISO()),media:blobUrl||null,mediaType:blobUrl?recType:null,savedAt:new Date().toISOString()};
   sd('ual_entries',all);
-  // auto-log journal
   var logs=gd('ual_logs',{}), acts=logs[todayISO()]||[];
   if(acts.indexOf('journal')===-1){acts.push('journal');logs[todayISO()]=acts;sd('ual_logs',logs);}
   var btn=document.getElementById('saveBtn');
@@ -231,7 +214,6 @@ function renderMediaPreview(){
 }
 function clearMedia(){blobUrl=null;recType=null;document.getElementById('mediaPreviewArea').innerHTML='';}
 
-// ── AFFIRMATIONS ─────────────────────────────────────────────
 var affIdx=0;
 function renderAff(){
   var a=AFFIRMATIONS[affIdx];
@@ -243,7 +225,6 @@ function renderAff(){
 function prevAff(){affIdx=(affIdx-1+AFFIRMATIONS.length)%AFFIRMATIONS.length;renderAff();}
 function nextAff(){affIdx=(affIdx+1)%AFFIRMATIONS.length;renderAff();}
 
-// ── SCHEDULE ─────────────────────────────────────────────────
 var schedOpen=false;
 function toggleSched(){
   schedOpen=!schedOpen;
@@ -263,7 +244,6 @@ function renderSched(){
   document.getElementById('schedContent').innerHTML=html;
 }
 
-// ── INIT ─────────────────────────────────────────────────────
 function init(){
   var dn=getDayNum(), now=new Date();
   document.getElementById('dateLabel').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+' · Day '+dn+' of 291';
