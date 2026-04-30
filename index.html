@@ -7,9 +7,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;padding:20px 16px 90px;}
-.page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .page-header h1{font-size:20px;font-weight:900;color:#fff;}
 .page-header p{font-size:11px;color:#9b90b0;margin-top:2px;}
+.day-nav{display:flex;align-items:center;justify-content:space-between;background:#160028;border:1px solid #2a1845;border-radius:12px;padding:10px 14px;margin-bottom:16px;}
+.day-nav-btn{background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:8px;color:#c084fc;font-size:16px;font-weight:700;padding:6px 14px;cursor:pointer;}
+.day-nav-btn:disabled{opacity:.25;cursor:default;}
+.day-nav-center{text-align:center;flex:1;}
+.day-nav-date{font-size:13px;font-weight:800;color:#fff;}
+.day-nav-sub{font-size:11px;color:#5a5070;margin-top:2px;}
+.past-banner{background:linear-gradient(135deg,#1a0a00,#2a1500);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#fbbf24;text-align:center;font-style:italic;}
 .sect-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#c084fc;margin:16px 0 8px;}
 .card{background:#160028;border:1px solid #2a1845;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
 .check-item{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;background:#160028;border:1.5px solid #2a1845;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
@@ -49,6 +56,18 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
   </div>
 </div>
 
+<!-- DAY NAVIGATION -->
+<div class="day-nav">
+  <button class="day-nav-btn" id="prevDayBtn" onclick="changeDay(-1)">◀</button>
+  <div class="day-nav-center">
+    <div class="day-nav-date" id="navDate"></div>
+    <div class="day-nav-sub" id="navSub"></div>
+  </div>
+  <button class="day-nav-btn" id="nextDayBtn" onclick="changeDay(1)">▶</button>
+</div>
+
+<div id="pastBanner" class="past-banner" style="display:none;">📅 Viewing a past day — you can still write and save</div>
+
 <div style="background:#0a0015;border-radius:99px;height:5px;margin-bottom:20px;">
   <div id="progBar" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#7c3aed,#be185d);transition:width .3s;width:0%;"></div>
 </div>
@@ -64,12 +83,12 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 
 <div style="background:#0a0015;border:1px solid #2a1845;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#5a5070;line-height:1.6;font-style:italic;">If the day falls apart: write one true sentence. That is enough. You are not the old pattern.</div>
 
-<div class="sect-label">Today's Journal Entry</div>
+<div class="sect-label">Journal Entry</div>
 <div style="font-size:12px;color:#5a5070;margin-bottom:6px;font-style:italic;">General thoughts — what came up, what hurt, what you noticed</div>
 <textarea id="journalThoughts" class="j-textarea" rows="5" placeholder="What came up today? What hurt? What surprised you? What are you recognizing?"></textarea>
 
 <div class="card" style="border-left:3px solid #f9a8d4;background:linear-gradient(135deg,#160028,#200020);margin-bottom:8px;">
-  <div style="font-size:10px;font-weight:700;color:#f9a8d4;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Today's Prompt · Day <span id="promptDayNum"></span></div>
+  <div style="font-size:10px;font-weight:700;color:#f9a8d4;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Prompt · Day <span id="promptDayNum"></span></div>
   <div id="promptText" style="font-size:14px;color:#ede8f5;font-style:italic;line-height:1.6;font-family:Georgia,serif;"></div>
 </div>
 <textarea id="journalPromptResp" class="j-textarea prompt-ta" rows="5" placeholder="Write your response here — raw, unedited, honest..."></textarea>
@@ -81,7 +100,7 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 </div>
 <div id="mediaPreviewArea"></div>
 
-<button class="grad-btn" onclick="saveEntry()" id="saveBtn" style="margin-bottom:6px;">Save Today's Entry ✦</button>
+<button class="grad-btn" onclick="saveEntry()" id="saveBtn" style="margin-bottom:6px;">Save Entry ✦</button>
 <div style="font-size:11px;color:#3a3050;text-align:center;margin-bottom:16px;font-style:italic;">Saves locally. View in History.</div>
 
 <div class="sect-label">When the Wound Speaks</div>
@@ -111,7 +130,7 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 <div class="toast" id="toast"></div>
 
 <script>
-var START=new Date('2026-04-27'), TOTAL=291;
+var START=new Date(2026,3,27), TOTAL=291;
 var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 var PROMPTS=['When did I first learn that love had conditions?','What did I do to earn love as a child? Did it work?','Who taught me I was too much — or not enough?','What is the earliest memory I have of feeling unworthy?','What did I absorb from the women who raised me about love?','What did my father\'s absence or presence teach me about whether I was worth staying for?','When did I first make myself small to keep someone close?','What secret have I carried the longest without naming it?','When did I first run before someone could leave me?','What has this wound cost me that I\'ve never fully named out loud?','What did I believe about myself before I had language for it?','What am I afraid I\'ll find if I look all the way to the bottom of this?','When did I first decide that my fullness was dangerous?','What does the little girl who started this wound need me to say to her today?','What patterns do I keep repeating that trace back to the wound?','How have I abandoned my own work the way I was abandoned?','When did I confuse neediness for love? Intensity for intimacy?','What did I give away that I wish I had kept?','When did I stay long past the time I should have left?','When did I leave before something real could form?','How have I dimmed my gifts to make others comfortable?','Who manipulated me, and what did I ignore in order to stay?','When did I stop trusting my own perception? What happened?','What is the full cost — emotionally, creatively, spiritually — of this wound?','What have I never said out loud about the damage?','What would I say to the darkest version of myself if she were sitting across from me?','How did seeking validation online feed the wound instead of heal it?','When did performing strength cost me something I couldn\'t get back?','What does it feel like in my body when I\'m about to repeat the pattern?','What finally broke the pattern — even temporarily?','When did I first hear God in the quiet instead of the chaos?','What did I finish that I almost abandoned? How did it feel to finish?','When did I choose to stay with myself instead of running?','What does the wound feel like now compared to when I started?','When did I first trust my own instincts again?','What does it feel like to let someone actually see me?','What have I forgiven — or started to forgive?','Where do I still feel the wound? Is it smaller? Louder?','What have I learned that I cannot unlearn?','What does it mean that I am still here?','When did I choose the work over the wound for the first time?','What does staying with myself look like on an ordinary Tuesday?','What is God saying to me in the quiet this week?','What does it feel like to receive without immediately deflecting?','What does finishing this project prove about who I am now?','How has my relationship with my creativity changed this year?','What does it mean to love without losing myself?','What has genuine faith — not performance — looked like this year?','Who am I becoming that the wounded version of me couldn\'t imagine?','What am I teaching by surviving this?','What do I want to say to the wound at the end?','What would I want the girl in Letter 1 to know now?','What are the final words I want to leave on this year?','How do I live differently now than I did on April 27?','What does reclamation feel like in my body?','If I could write a letter to who I was a year ago, what would I say?','What does it mean that I did not abandon myself this time?'];
@@ -120,24 +139,66 @@ var AFFIRMATIONS=[{wound:'The wound says you are worthless',truth:'I am fearfull
 
 var CHECKLIST_ITEMS=[{id:'scripture',label:'Read today\'s Scripture passage slowly — out loud if possible'},{id:'write_verse',label:'Write the anchor verse by hand in your journal'},{id:'resource',label:'Listen to today\'s healing resource (30–40 min)'},{id:'pause_note',label:'Pause when something connects — write it down'},{id:'reflection',label:'Free write in today\'s journal entry'},{id:'prompt',label:'Answer today\'s reflection prompt'},{id:'creative',label:'Complete today\'s creative practice'},{id:'sentence',label:'Write one true sentence — on hard days, this is enough'}];
 
-var CREATIVE=[{day:'Monday',name:'Morning Pages',desc:'Three pages. Longhand. No editing. Let the underground river flow.'},{day:'Tuesday',name:'Poetry / Lyric Study',desc:'Read one poem out loud twice. Then write one — honest, not perfect.'},{day:'Wednesday',name:'Fiction / Novel',desc:'Reenter your story. Write forward. Leave one sentence as a handoff.'},{day:'Thursday',name:'Photography',desc:'20–30 min finding light, texture, time passing. Write 3 sentences about what you saw.'},{day:'Friday',name:'Literary Reading',desc:'Read 45–60 min. After: what did this writer do that I want to learn?'},{day:'Saturday',name:'Free Making',desc:'No assignment. No prompt. No goal. Create because you are a maker.'},{day:'Sunday',name:'Rest + Reflection',desc:'No making. Only receiving. Evening: what did I make? What surprised me?'}];
+var CREATIVE=[{day:'Monday',name:'Morning Pages',desc:'Three pages. Longhand. No editing.'},{day:'Tuesday',name:'Poetry / Lyric Study',desc:'Read one poem out loud twice. Then write one.'},{day:'Wednesday',name:'Fiction / Novel',desc:'Reenter your story. Write forward.'},{day:'Thursday',name:'Photography',desc:'20–30 min finding light, texture, time passing.'},{day:'Friday',name:'Literary Reading',desc:'Read 45–60 min. What did this writer do that I want to learn?'},{day:'Saturday',name:'Free Making',desc:'No assignment. Create because you are a maker.'},{day:'Sunday',name:'Rest + Reflection',desc:'No making. Only receiving.'}];
 
 var SCHED_ITEMS=[{t:'6:30 AM',l:'🏋🏾‍♀️ Workout',s:false},{t:'8:15 AM',l:'🚿 Shower · Water · No phone',s:false},{t:'8:30 AM',l:'📖 HEALING HOUR — Scripture + Resource + Reflection',s:true},{t:'9:30 AM',l:'✍🏾 CREATIVE PRACTICE',s:true},{t:'10:30 AM',l:'🌅 Sacred block closes. Day begins.',s:false}];
 
 function gd(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
 function sd(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function todayISO(){var n=new Date(),y=n.getFullYear(),mo=n.getMonth()+1,d=n.getDate();return y+'-'+(mo<10?'0'+mo:mo)+'-'+(d<10?'0'+d:d);}
-function getDayNum(){return Math.max(1,Math.min(Math.floor((new Date()-START)/86400000)+1,TOTAL));}
-function isoFriendly(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 
-var todayKey='ual_chk_'+new Date().toDateString();
+// ── DATE HELPERS ─────────────────────────────────────────
+function todayDayNum(){
+  var now=new Date();
+  var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return Math.max(1,Math.min(Math.floor((today-START)/86400000)+1,TOTAL));
+}
+function dayNumToISO(dn){
+  var d=new Date(START.getFullYear(),START.getMonth(),START.getDate()+dn-1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dayNumToDate(dn){
+  return new Date(START.getFullYear(),START.getMonth(),START.getDate()+dn-1);
+}
+function isoFriendly(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});}
 
-function renderChecklist(){
-  var checked=gd(todayKey,{}), count=0, html='';
+// ── STATE ────────────────────────────────────────────────
+var currentDayNum=todayDayNum();
+
+function changeDay(dir){
+  var next=currentDayNum+dir;
+  if(next<1||next>todayDayNum()) return;
+  currentDayNum=next;
+  render();
+  window.scrollTo(0,0);
+}
+
+// ── RENDER ───────────────────────────────────────────────
+function render(){
+  var dn=currentDayNum;
+  var iso=dayNumToISO(dn);
+  var dt=dayNumToDate(dn);
+  var isToday=dn===todayDayNum();
+  var isPast=dn<todayDayNum();
+
+  // Nav
+  document.getElementById('navDate').textContent=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('navSub').textContent='Day '+dn+' of '+TOTAL+(isToday?' · Today':'');
+  document.getElementById('prevDayBtn').disabled=dn<=1;
+  document.getElementById('nextDayBtn').disabled=isToday;
+  document.getElementById('pastBanner').style.display=isPast?'block':'none';
+  document.getElementById('dateLabel').textContent=isToday?'Today':'Day '+dn;
+
+  // Prompt
+  document.getElementById('promptDayNum').textContent=dn;
+  document.getElementById('promptText').textContent='"'+PROMPTS[(dn-1)%PROMPTS.length]+'"';
+
+  // Checklist
+  var chkKey='ual_chk_'+dt.toDateString();
+  var checked=gd(chkKey,{}), count=0, html='';
   CHECKLIST_ITEMS.forEach(function(item){
     var done=!!checked[item.id]; if(done) count++;
-    html+='<div class="check-item'+(done?' done':'')+'" onclick="toggleCheck(\''+item.id+'\')">'
+    html+='<div class="check-item'+(done?' done':'')+'" onclick="toggleCheck(\''+item.id+'\',\''+chkKey+'\',\''+iso+'\')">'
       +'<div class="check-box"><span class="check-tick">✓</span></div>'
       +'<div class="check-lbl">'+item.label+'</div>'
       +'</div>';
@@ -146,42 +207,53 @@ function renderChecklist(){
   document.getElementById('checkCount').textContent=count+'/'+CHECKLIST_ITEMS.length;
   document.getElementById('checkCount').style.color=count===CHECKLIST_ITEMS.length?'#34d399':'#c084fc';
   document.getElementById('progBar').style.width=(count/CHECKLIST_ITEMS.length*100)+'%';
-  document.getElementById('progBar').style.boxShadow=count===CHECKLIST_ITEMS.length?'0 0 10px #a855f7':'none';
   document.getElementById('allDoneBanner').style.display=count===CHECKLIST_ITEMS.length?'block':'none';
-}
 
-function toggleCheck(id){
-  var checked=gd(todayKey,{});
-  checked[id]=!checked[id];
-  sd(todayKey,checked);
-  var logs=gd('ual_logs',{}), acts=logs[todayISO()]||[];
-  if(id==='resource'&&checked[id]&&acts.indexOf('healing')===-1){acts.push('healing');logs[todayISO()]=acts;sd('ual_logs',logs);}
-  if(id==='creative'&&checked[id]&&acts.indexOf('creative')===-1){acts.push('creative');logs[todayISO()]=acts;sd('ual_logs',logs);}
-  renderChecklist();
-}
-
-var recObj=null, recChunks=[], recType=null, blobUrl=null;
-
-function loadEntry(){
-  var entry=gd('ual_entries',{})[todayISO()]||{};
+  // Journal
+  var entry=gd('ual_entries',{})[iso]||{};
   document.getElementById('journalThoughts').value=entry.thoughts||'';
   document.getElementById('journalPromptResp').value=entry.promptResponse||'';
+
+  // Schedule uses actual day of week
+  renderSched(dt);
+}
+
+function toggleCheck(id,chkKey,iso){
+  var checked=gd(chkKey,{});
+  checked[id]=!checked[id];
+  sd(chkKey,checked);
+  var logs=gd('ual_logs',{}),acts=logs[iso]||[];
+  if(id==='resource'&&checked[id]&&acts.indexOf('healing')===-1){acts.push('healing');logs[iso]=acts;sd('ual_logs',logs);}
+  if(id==='creative'&&checked[id]&&acts.indexOf('creative')===-1){acts.push('creative');logs[iso]=acts;sd('ual_logs',logs);}
+  render();
 }
 
 function saveEntry(){
+  var dn=currentDayNum;
+  var iso=dayNumToISO(dn);
   var thoughts=document.getElementById('journalThoughts').value.trim();
   var resp=document.getElementById('journalPromptResp').value.trim();
   if(!thoughts&&!resp&&!blobUrl){toast('Write something first ✦');return;}
-  var dn=getDayNum(), all=gd('ual_entries',{});
-  all[todayISO()]={thoughts:thoughts,promptResponse:resp,prompt:PROMPTS[(dn-1)%PROMPTS.length],dayNum:dn,date:isoFriendly(todayISO()),media:blobUrl||null,mediaType:blobUrl?recType:null,savedAt:new Date().toISOString()};
+  var all=gd('ual_entries',{});
+  all[iso]={thoughts:thoughts,promptResponse:resp,prompt:PROMPTS[(dn-1)%PROMPTS.length],dayNum:dn,date:isoFriendly(iso),media:blobUrl||null,mediaType:blobUrl?recType:null,savedAt:new Date().toISOString()};
   sd('ual_entries',all);
-  var logs=gd('ual_logs',{}), acts=logs[todayISO()]||[];
-  if(acts.indexOf('journal')===-1){acts.push('journal');logs[todayISO()]=acts;sd('ual_logs',logs);}
+  // Sync to ual_prompts
+  var pd=gd('ual_prompts',{});
+  if(!pd[dn]) pd[dn]={};
+  pd[dn].response=resp;
+  pd[dn].updatedAt=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  sd('ual_prompts',pd);
+  // Log journal
+  var logs=gd('ual_logs',{}),acts=logs[iso]||[];
+  if(acts.indexOf('journal')===-1){acts.push('journal');logs[iso]=acts;sd('ual_logs',logs);}
   var btn=document.getElementById('saveBtn');
   btn.textContent='✓ Saved!';
-  setTimeout(function(){btn.textContent='Save Today\'s Entry ✦';},2000);
+  setTimeout(function(){btn.textContent='Save Entry ✦';},2000);
+  toast('Entry saved ✦');
 }
 
+// ── MEDIA ────────────────────────────────────────────────
+var recObj=null,recChunks=[],recType=null,blobUrl=null;
 function startRec(type){
   navigator.mediaDevices.getUserMedia(type==='video'?{video:true,audio:true}:{audio:true}).then(function(stream){
     recChunks=[];recType=type;
@@ -191,11 +263,9 @@ function startRec(type){
       var blob=new Blob(recChunks,{type:type==='video'?'video/webm':'audio/webm'});
       blobUrl=URL.createObjectURL(blob);
       stream.getTracks().forEach(function(t){t.stop();});
-      renderMediaPreview();
-      renderMediaBtns(false);
+      renderMediaPreview();renderMediaBtns(false);
     };
-    recObj.start();
-    renderMediaBtns(true);
+    recObj.start();renderMediaBtns(true);
   }).catch(function(){alert('Could not access '+type+'. Check permissions.');});
 }
 function stopRec(){if(recObj)recObj.stop();}
@@ -214,6 +284,7 @@ function renderMediaPreview(){
 }
 function clearMedia(){blobUrl=null;recType=null;document.getElementById('mediaPreviewArea').innerHTML='';}
 
+// ── AFFIRMATIONS ─────────────────────────────────────────
 var affIdx=0;
 function renderAff(){
   var a=AFFIRMATIONS[affIdx];
@@ -225,14 +296,16 @@ function renderAff(){
 function prevAff(){affIdx=(affIdx-1+AFFIRMATIONS.length)%AFFIRMATIONS.length;renderAff();}
 function nextAff(){affIdx=(affIdx+1)%AFFIRMATIONS.length;renderAff();}
 
+// ── SCHEDULE ─────────────────────────────────────────────
 var schedOpen=false;
 function toggleSched(){
   schedOpen=!schedOpen;
   document.getElementById('schedBlock').style.display=schedOpen?'block':'none';
   document.getElementById('schedArrow').textContent=schedOpen?'▲':'▼';
 }
-function renderSched(){
-  var cr=CREATIVE.filter(function(r){return r.day===DAYS[new Date().getDay()];})[0]||CREATIVE[0];
+function renderSched(dt){
+  var dayName=DAYS[dt.getDay()];
+  var cr=CREATIVE.filter(function(r){return r.day===dayName;})[0]||CREATIVE[0];
   var html='';
   SCHED_ITEMS.forEach(function(s,i){
     var label=s.l+(i===3?' — '+cr.name:'');
@@ -244,18 +317,8 @@ function renderSched(){
   document.getElementById('schedContent').innerHTML=html;
 }
 
-function init(){
-  var dn=getDayNum(), now=new Date();
-  document.getElementById('dateLabel').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+' · Day '+dn+' of 291';
-  document.getElementById('promptDayNum').textContent=dn;
-  document.getElementById('promptText').textContent='"'+PROMPTS[(dn-1)%PROMPTS.length]+'"';
-  renderChecklist();
-  loadEntry();
-  renderAff();
-  renderSched();
-}
-
-init();
+render();
+renderAff();
 </script>
 </body>
 </html>
