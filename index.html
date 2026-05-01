@@ -84,6 +84,11 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 <div style="background:#0a0015;border:1px solid #2a1845;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#5a5070;line-height:1.6;font-style:italic;">If the day falls apart: write one true sentence. That is enough. You are not the old pattern.</div>
 
 <div class="sect-label">Journal Entry</div>
+<div id="dailyScripture" style="background:rgba(255,255,255,.05);border-left:3px solid #ec4899;border-radius:10px;padding:10px 14px;margin-bottom:10px;">
+  <div id="scriptureRef" style="font-size:10px;font-weight:700;color:#f9a8d4;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;"></div>
+  <div id="scriptureText" style="font-size:14px;color:#fff;font-style:italic;line-height:1.6;font-family:Georgia,serif;"></div>
+  <div id="scriptureLetter" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;"></div>
+</div>
 <div style="font-size:12px;color:#5a5070;margin-bottom:6px;font-style:italic;">General thoughts — what came up, what hurt, what you noticed</div>
 <textarea id="journalThoughts" class="j-textarea" rows="5" placeholder="What came up today? What hurt? What surprised you? What are you recognizing?"></textarea>
 
@@ -132,6 +137,88 @@ body{background:#07000f;font-family:system-ui,sans-serif;min-height:100vh;paddin
 <script>
 var START=new Date(2026,3,27), TOTAL=291;
 var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+var SCRIPTURES_BY_PART={
+  1:[
+    {ref:'Psalm 139:1-6',    text:'You have searched me and known me.',                    letter:'Letter 1'},
+    {ref:'Psalm 139:13-16',  text:'You knit me together in my mother\'s womb.',            letter:'Letter 1'},
+    {ref:'Jeremiah 1:4-5',   text:'Before I formed you in the womb I knew you.',           letter:'Letter 1'},
+    {ref:'Isaiah 44:2',      text:'The LORD who made you, who formed you from the womb.',  letter:'Letter 1'},
+    {ref:'Lamentations 5:7', text:'Our ancestors sinned and we bear their punishment.',    letter:'Letter 2'},
+    {ref:'Ruth 1:16-17',     text:'Where you go I will go.',                               letter:'Letter 2'},
+    {ref:'Psalm 27:10',      text:'Though my father and mother forsake me, the LORD will receive me.', letter:'Letter 3'},
+    {ref:'Psalm 68:5',       text:'A father to the fatherless.',                           letter:'Letter 3'},
+    {ref:'Isaiah 49:15',     text:'Can a mother forget the baby at her breast?',           letter:'Letter 4'},
+    {ref:'Isaiah 49:16',     text:'I have engraved you on the palms of my hands.',         letter:'Letter 4'},
+    {ref:'Zephaniah 3:17',   text:'He will rejoice over you with singing.',                letter:'Letter 4'},
+    {ref:'Matthew 5:14-16',  text:'You are the light of the world.',                       letter:'Letter 5'},
+    {ref:'Proverbs 29:25',   text:'Fear of man will prove to be a snare.',                 letter:'Letter 5'},
+    {ref:'Deuteronomy 31:6', text:'He will never leave you nor forsake you.',              letter:'Letter 6'},
+    {ref:'Genesis 50:20',    text:'You intended to harm me, but God intended it for good.',letter:'Wound Letter 1'}
+  ],
+  2:[
+    {ref:'Romans 8:38-39',        text:'Nothing can separate us from the love of God.',         letter:'Letter 6'},
+    {ref:'Romans 8:1',            text:'There is now no condemnation.',                          letter:'Letter 7'},
+    {ref:'John 8:1-11',           text:'Neither do I condemn you.',                              letter:'Letter 7'},
+    {ref:'1 Cor 13:4-7',          text:'Love is patient, love is kind.',                         letter:'Letter 8'},
+    {ref:'Hosea 2:14',            text:'I will allure her and speak tenderly to her.',           letter:'Letter 13'},
+    {ref:'Philippians 1:6',       text:'He who began a good work in you will carry it on.',     letter:'Letter 14'},
+    {ref:'Matthew 6:1-4',         text:'Do not practice your righteousness in front of others.',letter:'Letter 15'},
+    {ref:'Ezekiel 36:26',         text:'I will give you a new heart.',                           letter:'Letter 16'},
+    {ref:'Psalm 4:2',             text:'How long will you love delusions and seek false gods?',  letter:'Letter 17'},
+    {ref:'2 Corinthians 12:9',    text:'My grace is sufficient for you.',                        letter:'Letter 18'},
+    {ref:'1 Corinthians 6:19-20', text:'You are not your own; you were bought at a price.',     letter:'Letter 19'},
+    {ref:'Isaiah 43:18-19',       text:'Forget the former things; see, I am doing a new thing.',letter:'Letter 20'},
+    {ref:'Proverbs 28:1',         text:'The righteous are as bold as a lion.',                   letter:'Letter 21'},
+    {ref:'1 John 4:1',            text:'Test the spirits to see whether they are from God.',     letter:'Letter 23'},
+    {ref:'Proverbs 3:5-6',        text:'Trust in the LORD with all your heart.',                 letter:'Letter 24'},
+    {ref:'Psalm 139:23-24',       text:'Search me, God, and know my heart.',                     letter:'Wound Letter 2'}
+  ],
+  3:[
+    {ref:'Psalm 34:18',     text:'The LORD is close to the brokenhearted.',               letter:'Letter 9'},
+    {ref:'Matthew 11:28-30',text:'Come to me, all you who are weary and burdened.',       letter:'Letter 26'},
+    {ref:'1 Kings 19:11-12',text:'After the fire came a gentle whisper.',                 letter:'Letter 27'},
+    {ref:'Habakkuk 2:2',    text:'Write down the revelation and make it plain.',          letter:'Letter 28'},
+    {ref:'Psalm 46:10',     text:'Be still, and know that I am God.',                    letter:'Letter 29'},
+    {ref:'John 8:32',       text:'The truth will set you free.',                          letter:'Letter 30'},
+    {ref:'Psalm 62:5-6',    text:'Yes, my soul, find rest in God.',                      letter:'Letter 31'},
+    {ref:'1 John 4:19',     text:'We love because he first loved us.',                    letter:'Letter 32'},
+    {ref:'Joel 2:25',       text:'I will repay you for the years the locusts have eaten.',letter:'Letter 33'},
+    {ref:'Colossians 3:13', text:'Forgive as the Lord forgave you.',                      letter:'Letter 34'},
+    {ref:'Luke 15:20',      text:'While he was still a long way off, his father saw him.',letter:'Letter 35'},
+    {ref:'Isaiah 30:21',    text:'Your ears will hear a voice behind you saying, this is the way.',letter:'Letter 36'},
+    {ref:'Colossians 3:23', text:'Whatever you do, work at it with all your heart.',      letter:'Letter 37'},
+    {ref:'Galatians 6:4',   text:'Each one should test their own actions.',               letter:'Letter 38'},
+    {ref:'Romans 6:6-7',    text:'Our old self was crucified with him.',                  letter:'Wound Letter 3'}
+  ],
+  4:[
+    {ref:'Isaiah 43:4',       text:'You are precious and honored in my sight.',           letter:'Letter 10'},
+    {ref:'1 John 4:18',       text:'Perfect love drives out fear.',                       letter:'Letter 11'},
+    {ref:'Isaiah 61:1-3',     text:'Beauty for ashes.',                                   letter:'Letter 12'},
+    {ref:'John 1:16',         text:'Out of his fullness we have all received grace.',     letter:'Letter 39'},
+    {ref:'2 Timothy 4:7',     text:'I have fought the good fight, I have finished the race.',letter:'Letter 40'},
+    {ref:'Exodus 35:31-32',   text:'He has filled them with skill to do all kinds of work.',letter:'Letter 41'},
+    {ref:'Mark 12:31',        text:'Love your neighbor as yourself.',                     letter:'Letter 42'},
+    {ref:'Micah 6:8',         text:'Act justly, love mercy, walk humbly with your God.',  letter:'Letter 43'},
+    {ref:'Matthew 10:16',     text:'Be as shrewd as snakes and as innocent as doves.',   letter:'Letter 44'},
+    {ref:'Ruth 1:16',         text:'Where you go I will go.',                             letter:'Letter 45'},
+    {ref:'2 Corinthians 1:4', text:'He comforts us so we can comfort others.',           letter:'Letter 46'},
+    {ref:'Psalm 19:1',        text:'The heavens declare the glory of God.',               letter:'Letter 47'},
+    {ref:'Psalm 36:9',        text:'In your light we see light.',                         letter:'Letter 48'},
+    {ref:'Proverbs 31:25',    text:'She is clothed with strength and dignity.',           letter:'Letter 49'},
+    {ref:'Ephesians 3:17-19', text:'To grasp how wide and long and high and deep is the love of Christ.',letter:'Letter 50'},
+    {ref:'James 1:4',         text:'Let perseverance finish its work.',                   letter:'Letter 51'},
+    {ref:'Galatians 5:1',     text:'It is for freedom that Christ has set us free.',     letter:'Wound Letter 4'},
+    {ref:'Psalm 139:13-16',   text:'You knit me together in my mother\'s womb.',         letter:'Letter 52 — The Goodbye'}
+  ]
+};
+
+function getPartForDay(dn){return dn<=84?1:dn<=182?2:dn<=252?3:4;}
+function getScriptureForDay(dn){
+  var part=getPartForDay(dn);
+  var arr=SCRIPTURES_BY_PART[part];
+  return arr[(dn-1)%arr.length];
+}
 
 var PROMPTS=['When did I first learn that love had conditions?','What did I do to earn love as a child? Did it work?','Who taught me I was too much — or not enough?','What is the earliest memory I have of feeling unworthy?','What did I absorb from the women who raised me about love?','What did my father\'s absence or presence teach me about whether I was worth staying for?','When did I first make myself small to keep someone close?','What secret have I carried the longest without naming it?','When did I first run before someone could leave me?','What has this wound cost me that I\'ve never fully named out loud?','What did I believe about myself before I had language for it?','What am I afraid I\'ll find if I look all the way to the bottom of this?','When did I first decide that my fullness was dangerous?','What does the little girl who started this wound need me to say to her today?','What patterns do I keep repeating that trace back to the wound?','How have I abandoned my own work the way I was abandoned?','When did I confuse neediness for love? Intensity for intimacy?','What did I give away that I wish I had kept?','When did I stay long past the time I should have left?','When did I leave before something real could form?','How have I dimmed my gifts to make others comfortable?','Who manipulated me, and what did I ignore in order to stay?','When did I stop trusting my own perception? What happened?','What is the full cost — emotionally, creatively, spiritually — of this wound?','What have I never said out loud about the damage?','What would I say to the darkest version of myself if she were sitting across from me?','How did seeking validation online feed the wound instead of heal it?','When did performing strength cost me something I couldn\'t get back?','What does it feel like in my body when I\'m about to repeat the pattern?','What finally broke the pattern — even temporarily?','When did I first hear God in the quiet instead of the chaos?','What did I finish that I almost abandoned? How did it feel to finish?','When did I choose to stay with myself instead of running?','What does the wound feel like now compared to when I started?','When did I first trust my own instincts again?','What does it feel like to let someone actually see me?','What have I forgiven — or started to forgive?','Where do I still feel the wound? Is it smaller? Louder?','What have I learned that I cannot unlearn?','What does it mean that I am still here?','When did I choose the work over the wound for the first time?','What does staying with myself look like on an ordinary Tuesday?','What is God saying to me in the quiet this week?','What does it feel like to receive without immediately deflecting?','What does finishing this project prove about who I am now?','How has my relationship with my creativity changed this year?','What does it mean to love without losing myself?','What has genuine faith — not performance — looked like this year?','Who am I becoming that the wounded version of me couldn\'t imagine?','What am I teaching by surviving this?','What do I want to say to the wound at the end?','What would I want the girl in Letter 1 to know now?','What are the final words I want to leave on this year?','How do I live differently now than I did on April 27?','What does reclamation feel like in my body?','If I could write a letter to who I was a year ago, what would I say?','What does it mean that I did not abandon myself this time?'];
 
@@ -188,6 +275,12 @@ function render(){
   document.getElementById('nextDayBtn').disabled=isToday;
   document.getElementById('pastBanner').style.display=isPast?'block':'none';
   document.getElementById('dateLabel').textContent=isToday?'Today':'Day '+dn;
+
+  // Scripture
+  var sc=getScriptureForDay(dn);
+  document.getElementById('scriptureRef').textContent=sc.ref;
+  document.getElementById('scriptureText').textContent='"'+sc.text+'"';
+  document.getElementById('scriptureLetter').textContent=sc.letter;
 
   // Prompt
   document.getElementById('promptDayNum').textContent=dn;
